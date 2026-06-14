@@ -1,26 +1,148 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* ─── Tailwind v4 theme tokens ───────────────────────────────────────────── */
+@theme {
+  /* Surface colours (bg-stone-950 handles the base warm-black #0c0a09) */
+  --color-surface: #161412;
+  --color-card: #1e1a17;
+
+  /* Typography families — resolved from CSS vars injected by next/font */
+  --font-heading: var(--font-playfair), ui-serif, Georgia, serif;
+  --font-body: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-code: var(--font-jetbrains), ui-monospace, "Cascadia Code", monospace;
+
+  /* Custom animations */
+  --animate-blink: blink 1s step-end infinite;
+  --animate-ticker: ticker 30s linear infinite;
+  --animate-ticker-fast: ticker 15s linear infinite;
+  --animate-pulse-slow: pulse 3s ease-in-out infinite;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+/* ─── Keyframes ──────────────────────────────────────────────────────────── */
+@keyframes blink {
+  50% { opacity: 0; }
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+@keyframes ticker {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+/* ─── Base resets ────────────────────────────────────────────────────────── */
+html {
+  scroll-behavior: smooth;
+  background-color: #0c0a09;
+}
+
+/* Suppress default cursor everywhere; React component drives the custom one */
+*, *::before, *::after {
+  cursor: none !important;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: #0c0a09;
+  color: #fafaf9;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
+
+/* ─── Custom cursor ──────────────────────────────────────────────────────── */
+.cursor-dot {
+  width: 6px;
+  height: 6px;
+  background-color: #f97316;
+  border-radius: 50%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 10000;
+  transform: translate(-50%, -50%);
+  will-change: transform;
+}
+
+.cursor-ring {
+  width: 30px;
+  height: 30px;
+  border: 1.5px solid rgba(249, 115, 22, 0.45);
+  border-radius: 50%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 9999;
+  transform: translate(-50%, -50%);
+  transition: left 0.10s ease-out, top 0.10s ease-out, width 0.15s ease, height 0.15s ease, border-color 0.15s ease;
+  will-change: transform;
+}
+
+.cursor-ring.hovering {
+  width: 44px;
+  height: 44px;
+  border-color: rgba(249, 115, 22, 0.8);
+}
+
+/* ─── Scrollbar ──────────────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: #0c0a09; }
+::-webkit-scrollbar-thumb { background: #f97316; border-radius: 2px; }
+
+/* ─── Section divider line ───────────────────────────────────────────────── */
+.section-divider {
+  height: 1px;
+  background: linear-gradient(to right, transparent, #f97316 40%, #fbbf24 60%, transparent);
+  opacity: 0.25;
+}
+
+/* ─── Browser mockup ─────────────────────────────────────────────────────── */
+.browser-mockup {
+  background: #1e1a17;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.browser-mockup-bar {
+  background: #161412;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.browser-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.browser-url {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+  padding: 3px 10px;
+  font-family: var(--font-jetbrains), monospace;
+  font-size: 10px;
+  color: #a8a29e;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.browser-mockup-body {
+  min-height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+/* ─── Code block token colours ───────────────────────────────────────────── */
+.token-keyword   { color: #f97316; }
+.token-string    { color: #fbbf24; }
+.token-property  { color: #fafaf9; }
+.token-comment   { color: #57534e; font-style: italic; }
+.token-bracket   { color: #a8a29e; }
+.token-boolean   { color: #fb923c; }
+.token-number    { color: #a3e635; }
