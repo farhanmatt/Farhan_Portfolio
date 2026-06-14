@@ -1,22 +1,9 @@
 "use client";
 
-import { useState } from "react";
 import { motion } from "framer-motion";
-import { Mail, MapPin, ArrowRight, Send } from "lucide-react";
+import { Mail, MapPin, ArrowRight } from "lucide-react";
 import { GithubIcon, LinkedinIcon } from "@/components/SocialIcons";
 import { personalInfo } from "@/data/portfolio";
-
-interface FormState {
-  name: string;
-  email: string;
-  message: string;
-}
-
-const initialFormState: FormState = {
-  name: "",
-  email: "",
-  message: "",
-};
 
 const contactDetails = [
   {
@@ -46,49 +33,6 @@ const contactDetails = [
 ];
 
 export default function Contact() {
-  const [form, setForm] = useState<FormState>(initialFormState);
-  const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
-  const [feedback, setFeedback] = useState("");
-
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
-
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setStatus("sending");
-    setFeedback("");
-
-    try {
-      const response = await fetch("/api/contact", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(form),
-      });
-
-      const data = (await response.json()) as { error?: string };
-
-      if (!response.ok) {
-        throw new Error(data.error || "Failed to send message.");
-      }
-
-      setStatus("sent");
-      setFeedback("Message sent successfully.");
-      setForm(initialFormState);
-
-      setTimeout(() => {
-        setStatus("idle");
-        setFeedback("");
-      }, 3000);
-    } catch (error) {
-      setStatus("error");
-      setFeedback(
-        error instanceof Error ? error.message : "Something went wrong. Please try again."
-      );
-    }
-  };
 
   return (
     <section id="contact" className="relative py-28 px-6 overflow-hidden">
@@ -129,8 +73,8 @@ export default function Contact() {
           <div className="h-px w-20 bg-gradient-to-r from-orange-500 to-transparent" />
         </motion.div>
 
-        {/* Two columns */}
-        <div className="grid md:grid-cols-2 gap-16 items-start">
+        {/* Single column layout for contact info */}
+        <div className="max-w-2xl mx-auto">
           {/* Left - editorial heading + contact list */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -138,13 +82,12 @@ export default function Contact() {
             viewport={{ once: true, margin: "-60px" }}
             transition={{ duration: 0.55, delay: 0.1, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] }}
           >
-            <p className="font-body text-stone-400 text-base leading-relaxed mb-10 max-w-sm">
+            <p className="font-body text-stone-400 text-base leading-relaxed mb-10">
               I&apos;m currently open to full-time opportunities, freelance work,
-              or just a good conversation about tech. Drop me a message or reach
-              out directly - I&apos;ll get back to you promptly.
+              or just a good conversation about tech. Reach out directly - I&apos;ll get back to you promptly.
             </p>
 
-            <ul className="space-y-5">
+            <ul className="grid sm:grid-cols-2 gap-6">
               {contactDetails.map((item) => (
                 <li key={item.label}>
                   {item.href ? (
@@ -154,14 +97,14 @@ export default function Contact() {
                       rel="noopener noreferrer"
                       className="group flex items-center gap-4 text-stone-400 hover:text-stone-50 transition-colors duration-200"
                     >
-                      <span className="w-9 h-9 rounded-lg bg-card border border-white/[0.06] flex items-center justify-center shrink-0 group-hover:border-orange-500/30 transition-all duration-200">
+                      <span className="w-10 h-10 rounded-lg bg-card border border-white/[0.06] flex items-center justify-center shrink-0 group-hover:border-orange-500/30 transition-all duration-200">
                         {item.renderIcon("text-orange-500")}
                       </span>
                       <div>
                         <p className="font-code text-[11px] text-stone-600 uppercase tracking-widest mb-0.5">
                           {item.label}
                         </p>
-                        <p className="font-body text-sm">{item.value}</p>
+                        <p className="font-body text-sm font-medium">{item.value}</p>
                       </div>
                       <ArrowRight
                         size={14}
@@ -170,104 +113,20 @@ export default function Contact() {
                     </a>
                   ) : (
                     <div className="flex items-center gap-4 text-stone-400">
-                      <span className="w-9 h-9 rounded-lg bg-card border border-white/[0.06] flex items-center justify-center shrink-0">
+                      <span className="w-10 h-10 rounded-lg bg-card border border-white/[0.06] flex items-center justify-center shrink-0">
                         {item.renderIcon("text-orange-500")}
                       </span>
                       <div>
                         <p className="font-code text-[11px] text-stone-600 uppercase tracking-widest mb-0.5">
                           {item.label}
                         </p>
-                        <p className="font-body text-sm">{item.value}</p>
+                        <p className="font-body text-sm font-medium">{item.value}</p>
                       </div>
                     </div>
                   )}
                 </li>
               ))}
             </ul>
-          </motion.div>
-
-          {/* Right - contact form */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-60px" }}
-            transition={{ duration: 0.55, delay: 0.2, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] }}
-          >
-            <form onSubmit={handleSubmit} className="space-y-5">
-              <div>
-                <label className="block font-code text-[11px] text-stone-600 uppercase tracking-widest mb-2">
-                  Name
-                </label>
-                <input
-                  type="text"
-                  name="name"
-                  value={form.name}
-                  onChange={handleChange}
-                  required
-                  placeholder="Your full name"
-                  className="w-full bg-card border border-white/[0.06] rounded px-4 py-3 font-body text-sm text-stone-50 placeholder-stone-600 focus:outline-none focus:border-orange-500/50 transition-colors duration-200"
-                />
-              </div>
-
-              <div>
-                <label className="block font-code text-[11px] text-stone-600 uppercase tracking-widest mb-2">
-                  Email
-                </label>
-                <input
-                  type="email"
-                  name="email"
-                  value={form.email}
-                  onChange={handleChange}
-                  required
-                  placeholder="your@email.com"
-                  className="w-full bg-card border border-white/[0.06] rounded px-4 py-3 font-body text-sm text-stone-50 placeholder-stone-600 focus:outline-none focus:border-orange-500/50 transition-colors duration-200"
-                />
-              </div>
-
-              <div>
-                <label className="block font-code text-[11px] text-stone-600 uppercase tracking-widest mb-2">
-                  Message
-                </label>
-                <textarea
-                  name="message"
-                  value={form.message}
-                  onChange={handleChange}
-                  required
-                  rows={5}
-                  placeholder="Tell me about your project or opportunity..."
-                  className="w-full bg-card border border-white/[0.06] rounded px-4 py-3 font-body text-sm text-stone-50 placeholder-stone-600 focus:outline-none focus:border-orange-500/50 transition-colors duration-200 resize-none"
-                />
-              </div>
-
-              <button
-                type="submit"
-                disabled={status === "sending"}
-                className="w-full flex items-center justify-center gap-2 py-3 bg-orange-500 hover:bg-amber-400 disabled:opacity-60 text-stone-950 font-body font-semibold text-sm rounded transition-all duration-200"
-              >
-                {status === "sending" ? (
-                  "Sending..."
-                ) : status === "sent" ? (
-                  "Message sent!"
-                ) : status === "error" ? (
-                  "Try Again"
-                ) : (
-                  <>
-                    Send Message
-                    <Send size={14} strokeWidth={2.5} />
-                  </>
-                )}
-              </button>
-
-              {feedback ? (
-                <p
-                  className={`font-body text-sm ${
-                    status === "error" ? "text-rose-400" : "text-emerald-400"
-                  }`}
-                >
-                  {feedback}
-                </p>
-              ) : null}
-            </form>
           </motion.div>
         </div>
       </div>
